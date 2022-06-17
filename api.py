@@ -1,5 +1,6 @@
 from asyncio.proactor_events import _ProactorBasePipeTransport
 import os
+import json
  
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
@@ -47,6 +48,9 @@ class Student(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+        
+    def update(self):
+        db.session.commit()
  
 class StudentSchema(Schema):
     id = fields.Integer()
@@ -72,10 +76,13 @@ def get_all_students():
  
 @app.route('/api/students/get/<int:id>', methods = ['GET'])
 def get_student(id):
-    student_info = Student.get_by_id(id)
-    serializer = StudentSchema()
-    response = serializer.dump(student_info)
-    return jsonify(response), 200
+    student_info = Student.query.filter(Student.id == id).one_or_none()
+    if student_info:
+        serializer = StudentSchema()
+        response = serializer.dump(student_info)
+        return jsonify(response), 200
+    else:
+        return jsonify(message='No student with ID {} in base'.format(id)), 404
  
 @app.route('/api/students/add', methods = ['POST'])
 def add_student():
@@ -90,10 +97,53 @@ def add_student():
     serializer = StudentSchema()
     data = serializer.dump(new_student)
     return jsonify(data), 201
- 
+
+@app.route('/api/students/modify/<int:id>', methods = ['PATCH'])
+def modify_student(id):
+   if request.method == 'PATCH':
+        json_data = request.get_json()
+        student_modify = Student.query.filter(Student.id == id).one_or_none()
+        if student_modify:
+            if "name" in json_data:
+                student_modify.name = json_data.get('name')
+            if "email" in json_data:
+                student_modify.email = json_data.get('email')
+            if "age" in json_data:
+                student_modify.age = json_data.get('age')
+            if "cellphone" in json_data:
+                student_modify.cellphone = json_data.get('cellphone')
+            student_modify.update()
+            serializer = StudentSchema()
+            data = serializer.dump(student_modify)
+            return jsonify(data), 201
+        
+@app.route('/api/students/change/<int:id>', methods = ['PUT'])
+def change_student(id):
+    if request.method == 'PUT':
+        student_change = Student.query.filter(Student.id == id).one_or_none()
+        if student_change:
+            json_data = request.get_json()
+            student_change.name = json_data.get('name')
+            student_change.email = json_data.get('email')
+            student_change.age = json_data.get('age')
+            student_change.cellphone = json_data.get('cellphone')
+            student_change.update()
+            serializer = StudentSchema()
+            data = serializer.dump(student_change)
+            return jsonify(data), 201
+           
+@app.route('/api/students/delete/<int:id>', methods = ['DELETE'])
+def delete_student(id):
+    if request.method == 'DELETE':
+        delete_student = Student.query.filter(Student.id == id).one_or_none()
+        if delete_student:
+            delete_student.delete()
+            return jsonify(message='Student with ID:{} deleted'.format(id)), 200
+        else:
+            return jsonify(message='Student with ID:{} not found in database'.format(id)), 404
+
 if __name__ == '__main__':
     if not database_exists(engine.url):
         create_database(engine.url)
     db.create_all()
-    app.run(debug=True)
- 
+    app.run(use_reloader=True, debug=True)
