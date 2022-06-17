@@ -22,7 +22,7 @@ engine = create_engine(DB_URI, echo=True)
  
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_TRCK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
  
 class Student(db.Model):
@@ -142,8 +142,21 @@ def delete_student(id):
         else:
             return jsonify(message='Student with ID:{} not found in database'.format(id)), 404
 
+
+
+@app.route('/api/health-check/ok', methods = ['GET'])
+def health_check_ok():
+    return jsonify(message='Health is OK'), 200
+    
+@app.route('/api/health-check/bad', methods = ['GET'])
+def health_check_bad():
+    return jsonify(message='Health is BAD'), 404 
+
 if __name__ == '__main__':
     if not database_exists(engine.url):
         create_database(engine.url)
     db.create_all()
     app.run(use_reloader=True, debug=True)
+
+
+    
