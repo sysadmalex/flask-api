@@ -1,0 +1,104 @@
+{
+    "description": "The API documentation",
+    "endpoints": [
+      {
+        "endpoint": "/",
+        "description": "The Home endpoint",
+        "return": "Hello from students API!",
+        "method": "GET",
+        "status code": 200
+      },
+      {
+        "endpoint": "/api",
+        "description": "The main endpoint",
+        "return": "Return API documentation",
+        "method": "GET",
+        "status code": 200
+      },
+      {
+        "endpoint": "/api/students",
+        "description": "The endpoint Gets all students information",
+        "return": "The list of all students from database",
+        "method": "GET",
+        "status code": 200
+      },
+      {
+        "endpoint": "/api/students/get/<int:id>",
+        "description": "The endpoint Gets student information by ID",
+        "return": "Return student information",
+        "method": "GET",
+        "status code": {
+          "200": "if ID is existed",
+          "404": "no found ID"
+        }
+      },
+      {
+        "endpoint": "/api/students/add",
+        "description": "The endpoint creates the new student",
+        "method": "POST",
+        "status code": 201,
+        "parameters": {
+          "required all": {
+            "name": "String",
+            "email": "String",
+            "age": "Integer",
+            "cellphone": "String"
+          }
+        }
+      },
+      {
+        "endpoint": "/api/students/modify/<int:id",
+        "description": "The endpoint update student",
+        "method": "PATCH",
+        "status code": {
+          "201": "modified",
+          "404": "no found ID"
+        },
+        "parameters": {
+          "no required all": {
+            "name": "String",
+            "email": "String",
+            "age": "Integer",
+            "cellphone": "String"
+          }
+        }
+      },
+      {
+        "endpoint": "/api/students/change/<int:id>",
+        "description": "The endpoint updates student by ID",
+        "method": "PUT",
+        "status code": {
+          "201": "changed",
+        },
+        "parameters": {
+          "required all": {
+            "name": "String",
+            "email": "String",
+            "age": "Integer",
+            "cellphone": "String"
+          }
+        }
+      },
+      {
+        "endpoint": "/api/students/delete/<int:id>",
+        "description": "The endpoint delete student",
+        "method": "DELETE",
+        "status code": {
+          "200": "if ID is existed",
+          "404": "no found ID"
+        }
+      },
+      {
+        "endpoint": "/api/health-check/ok",
+        "description": "The endpoint health-check - OK",
+        "method": "GET",
+        "status code": 200
+      },
+      {
+        "endpoint": "/api/health-check/bad",
+        "description": "The endpoint health-check - BAD",
+        "method": "GET",
+        "status code": 404
+      }
+    ]
+  }
