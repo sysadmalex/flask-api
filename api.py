@@ -67,7 +67,7 @@ def home():
 def api_main():
     with open('info.json', 'r', encoding='utf-8') as info:
         json_data = json.load(info)
-    return jsonify('Hello, World!'), 200
+    return jsonify(json_data), 200
      
 @app.route('/api/students', methods=['GET'])
 def get_all_students():
