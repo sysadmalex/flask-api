@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    image: flask-api
+    container_name: flask-api
+    build: .
+    ports:
+      - 5000:5000
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - flask-api
+
+  db:
+    container_name: mysql
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - flask-api
+
+
+networks:
+  flask-api:
+    name: flask-api
+
+volumes:
+  mysql_data:
+    name: mysql_data
+
+    
